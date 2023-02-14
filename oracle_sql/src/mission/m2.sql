@@ -50,7 +50,6 @@ SELECT e.employee_id, e.last_name, d.department_name, l.city, e.salary
   AND e.department_id = 100;  
   
 // -------------------------------------------------------------------------
-
 // 조인과제2
 // Q1
 SELECT d.deptno, d.dname, e.empno, e.ename, e.sal
@@ -87,3 +86,53 @@ SELECT D.DEPTNO, D.DNAME,
    AND E.SAL BETWEEN S.LOSAL(+) AND S.HISAL(+)
    AND E.MGR = E2.EMPNO(+)
 ORDER BY D.DEPTNO, E.EMPNO; 
+
+//---------------------------------------------------------------------------------
+// 서브쿼리 과제 2
+// Q1.
+SELECT job FROM emp WHERE ename = 'ALLEN';
+
+SELECT e.job, e.empno, e.ename, e.sal, d.deptno, d.dname
+    FROM emp e, dept d
+    WHERE e.deptno = d.deptno
+    AND job = (SELECT job FROM emp WHERE ename = 'ALLEN');
+	
+//Q2.
+SELECT AVG(sal) FROM emp;
+
+SELECT E.EMPNO, E.ENAME, D.DNAME, E.HIREDATE, D.LOC, E.SAL, S.GRADE
+  FROM EMP E, DEPT D, SALGRADE S
+ WHERE E.DEPTNO = D.DEPTNO
+   AND E.SAL BETWEEN S.LOSAL AND S.HISAL
+   AND SAL > (SELECT AVG(SAL)
+                FROM EMP)
+ORDER BY E.SAL DESC, E.EMPNO; 
+
+//Q3
+SELECT job FROM emp WHERE deptno IN 30; 
+
+SELECT e.empno, e.ename, e.job, e.deptno, d.dname, d.loc
+    FROM dept d, emp e
+    WHERE d.deptno = e.deptno
+    AND job NOT IN (SELECT DISTINCT job FROM emp WHERE deptno IN 30)
+    AND e.deptno = 10;
+    
+//Q4
+SELECT MAX(salary) FROM emp WHERE job = 'SALESMAN';
+
+// 다중행 사용하지 않는 방법
+SELECT e.empno, e.ename, e.sal, s.grade 
+    FROM emp e, salgrade s
+	WHERE e.sal between s.losal and s.hisal
+    AND SAL > (SELECT MAX(sal) FROM emp WHERE job = 'SALESMAN')
+    ORDER BY E.EMPNO; 
+    
+// 다중행 사용하는 방법
+SELECT E.EMPNO, E.ENAME, E.SAL, S.GRADE
+  FROM EMP E, SALGRADE S
+ WHERE E.SAL BETWEEN S.LOSAL AND S.HISAL
+   AND SAL > ALL (SELECT DISTINCT SAL
+                    FROM EMP
+                   WHERE JOB = 'SALESMAN')
+    ORDER BY E.EMPNO;  
+
