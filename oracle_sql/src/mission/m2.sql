@@ -48,3 +48,42 @@ SELECT e.employee_id, e.last_name, d.department_name, l.city, e.salary
   AND d.location_id = l.location_id 
   AND NOT e.job_id IN(SELECT job_id FROM employees WHERE department_id = 30) 
   AND e.department_id = 100;  
+  
+// -------------------------------------------------------------------------
+
+// 조인과제2
+// Q1
+SELECT d.deptno, d.dname, e.empno, e.ename, e.sal
+    FROM dept d, emp e
+    WHERE d.deptno = e.deptno
+    AND e.sal > 2000
+    ORDER BY deptno, e.sal;
+    
+// Q2
+SELECT d.deptno, d.dname, TRUNC(AVG(e.sal)) AS AVG_SAL, MAX(e.sal) AS MAX_SAL, count(*) AS CNT
+    FROM dept d, emp e
+    WHERE d.deptno = e.deptno
+    GROUP BY d.deptno, d.dname
+    ORDER BY deptno;
+    
+SELECT d.deptno, d.dname, TRUNC(AVG(e.sal), 0) AS AVG_SAL, MAX(e.sal) AS MAX_SAL, count(*)
+    FROM dept d INNER JOIN emp e
+    ON d.deptno = e.deptno
+    GROUP BY d.deptno, d.dname;
+    
+// Q3
+SELECT d.deptno, d.dname, e.empno, e.ename, e.job, e.sal
+    FROM dept d, emp e
+    WHERE d.deptno = e.deptno(+)
+    ORDER BY deptno, ename;
+    
+// Q4
+SELECT D.DEPTNO, D.DNAME,
+       E.EMPNO, E.ENAME, E.MGR, E.SAL, E.DEPTNO,
+       S.LOSAL, S.HISAL, S.GRADE,
+       E2.EMPNO AS MGR_EMPNO, E2.ENAME AS MGR_ENAME
+  FROM EMP E, DEPT D, SALGRADE S, EMP E2
+ WHERE E.DEPTNO(+) = D.DEPTNO
+   AND E.SAL BETWEEN S.LOSAL(+) AND S.HISAL(+)
+   AND E.MGR = E2.EMPNO(+)
+ORDER BY D.DEPTNO, E.EMPNO; 
